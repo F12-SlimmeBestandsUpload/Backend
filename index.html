@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <title>Hello World Simple App</title>
+    </head>
+    <body>
+        <div>ZORG DAT JE TELEFOON OP DEZELFDE NETWERK ALS JE COMPUTER IS</div>
+        <img id="result"><br>
+        <canvas id="tex"></canvas>
+    </body>
+    <script>
+    	function toDataURL(url, callback){
+		    var xhr = new XMLHttpRequest();
+		    xhr.open('get', url);
+		    xhr.onload = function(){
+		    	callback(this.response);
+		    };
+		    
+		    xhr.send();
+		}
+
+		toDataURL("qrcode", function(dataURL){
+			var img = document.getElementById("result");
+			img.src = dataURL;
+		});
+    	
+		const socket = new WebSocket('ws://localhost:6969');
+		socket.addEventListener('message', function (event) {
+			createImageBitmap(event.data).then(imageBitmap => {
+				console.log(imageBitmap);
+				var myCanvas = document.getElementById('tex');
+				var ctx = myCanvas.getContext('2d');
+				ctx.canvas.width  = window.innerWidth;
+				ctx.canvas.height = window.innerHeight;
+				ctx.drawImage(imageBitmap, 0, 0, 250, 250)
+			})
+		});
+	</script>
+</html>
