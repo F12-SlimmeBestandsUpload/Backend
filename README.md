@@ -1,6 +1,6 @@
-NOTE: KOPIEER DE .env.example EN VERANDER HEM NAAR .env
-NOTE: KOPIEER DE .env.example EN VERANDER HEM NAAR .env
-NOTE: KOPIEER DE .env.example EN VERANDER HEM NAAR .env
+NOTE: KOPIEER DE '.env.example' EN VERANDER HEM NAAR '.env'.
+NOTE: KOPIEER DE '.env.example' EN VERANDER HEM NAAR '.env'.
+NOTE: KOPIEER DE '.env.example' EN VERANDER HEM NAAR '.env'.
 
 Zorg dat node en npm geïnstalleerd zijn.
 
