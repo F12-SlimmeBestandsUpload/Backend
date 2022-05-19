@@ -1,3 +1,4 @@
+const {v4} = require("uuid");
 module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload) => {
 	const appPort = 8000;
 	const staticPort = 9999;
@@ -12,6 +13,8 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload) 
 			address = networkInterfaces.Ethernet[1].address;
 		} else if (typeof networkInterfaces.WiFi !== 'undefined') {
 			address = networkInterfaces.WiFi[1].address;
+		} else if (typeof networkInterfaces['Wi-Fi 2'] !== 'undefined') {
+			address = networkInterfaces['Wi-Fi 2'][1].address;
 		} else {
 			address = networkInterfaces['Wi-Fi'][1].address;
 		}
@@ -50,9 +53,8 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload) 
 				return;
 			}
 		  	websocket.clients.forEach(function each(ws) {
-				if (ws.isAlive === false) 
+				if (ws.isAlive === false)
 					return ws.terminate();
-
 				ws.send(data);
 			});
 		});
@@ -62,7 +64,7 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload) 
 	app.get('/qrcode', (req, res) => {
 
 		QRCode.toDataURL("http://" + getLocalIp() + ":" + appPort + "/mobile", function (err, url) {
-			if (err) 
+			if (err)
 				console.log('error: ' + err)
 
 			res.end(url)
@@ -86,4 +88,18 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload) 
 			res.end(data);
 		});
 	}).listen(staticPort);
+
+	websocket.on('connection', function connection(ws, req) {
+		let id = v4();
+		ws.id = id;
+		QRCode.toDataURL("http://" + getLocalIp() + ":" + appPort + "/mobile/"+id, function (err, url) {
+			if (err)
+				console.log('error: ' + err)
+
+			ws.send(url)
+		})
+		websocket.clients.forEach(function each(client) {
+			console.log('Client.ID: ' + client.id);
+		});
+	});
 }
