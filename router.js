@@ -92,7 +92,7 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload) 
 	websocket.on('connection', function connection(ws, req) {
 		let id = v4();
 		ws.id = id;
-		QRCode.toDataURL("http://" + getLocalIp() + ":" + appPort + "/mobile/"+id, function (err, url) {
+		QRCode.toDataURL("http://" + getLocalIp() + ":" + "4200" + "?id="+id, function (err, url) {
 			if (err)
 				console.log('error: ' + err)
 
