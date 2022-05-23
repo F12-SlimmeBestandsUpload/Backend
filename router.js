@@ -61,6 +61,7 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 				references: references,
 			}));
 		});
+		res.end(JSON.stringify({"success": true, "msg": "done"}));
 	});
 
 	app.get("/reference", async (req, res) => {
