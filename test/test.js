@@ -3,8 +3,8 @@ var assert = require('assert');
 // Aws SDK for testing.
 const awsSdk = require('@aws-sdk/client-s3');
 
-describe('Post', function () {
-
+describe('AwsS3', function () {
+  
   describe('#post()', function () {
 
     it('should not cause error', async function () {
@@ -16,14 +16,10 @@ describe('Post', function () {
       await aws.post(fileName, value);
     });
   });
-});
-
-
-describe('Get', function () {
 
   describe('#get()', function () {
 
-    it('should return "value"', async function () {
+    it('should return "value" after post', async function () {
 
       let aws = require("../aws.js")(awsSdk, true);
       const fileName = "fileName";
@@ -34,14 +30,10 @@ describe('Get', function () {
       assert.equal(await aws.get(fileName), value);
     });
   });
-});
-
-
-describe('Delete', function () {
 
   describe('#get()', function () {
 
-    it('should return null', async function () {
+    it('should return null after delete', async function () {
 
       let aws = require("../aws.js")(awsSdk, true);
       const fileName = "fileName";
