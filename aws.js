@@ -13,6 +13,15 @@ module.exports = (awsSdk, shouldMock, region, bucket, accessKey, secretKey) => {
 			this.sdk = awsSdk;
 			this.inMemoryStorage = [];
 			this.isMock = shouldMock;
+			this.buffer = null;
+			this._resetBuffer();
+			this._setAws(region, bucket, accessKey, secretKey)
+		}
+
+		_setAws(region, bucket, accessKey, secretKey) {
+			if (this.isMock) {
+				return;
+			}
 			this.region = region;
 			this.bucket = bucket;
 			this.accessKey = accessKey;
@@ -24,8 +33,6 @@ module.exports = (awsSdk, shouldMock, region, bucket, accessKey, secretKey) => {
 			 		secretAccessKey: secretKey
 			 	}
 			});
-			this.buffer = null;
-			this._resetBuffer();
 		}
 
 		// GEBRUIK DIT
@@ -36,7 +43,7 @@ module.exports = (awsSdk, shouldMock, region, bucket, accessKey, secretKey) => {
 		}
 
 		async post(fileName, file) {
-			if (this.mock) {
+			if (this.isMock) {
 				return await this._mockPost(fileName, file);
 			}
 			const params = {
@@ -57,8 +64,8 @@ module.exports = (awsSdk, shouldMock, region, bucket, accessKey, secretKey) => {
 		}
 
 		async get(fileName) {
-			if (this.mock) {
-				return await this._mockGet(fileName, file);
+			if (this.isMock) {
+				return await this._mockGet(fileName);
 			}
 			const params = {
 			  Bucket: this.bucket,
@@ -78,29 +85,30 @@ module.exports = (awsSdk, shouldMock, region, bucket, accessKey, secretKey) => {
 					response.Body.once('end', () => resolve(this.buffer))
 
 				} catch (error) {
-				  	return reject(error)
+				  	return resolve(null)
 				}
 			});
 		}
 
 		async _mockGet(fileName) {
-			return this.inMemoryStorage[fileName];
+			let get = this.inMemoryStorage[fileName];
+			return typeof get === 'undefined' ? null : get;
 		}
 
 		async delete(fileName) {
-			if (this.mock) {
-				return this._mockDelete();
+			if (this.isMock) {
+				return this._mockDelete(fileName);
 			}
 			const params = {
 			  Bucket: this.bucket,
 			  Key: fileName,
 			};
 			const command = new this.sdk.DeleteObjectCommand(params);
-			try {
+			//try {
 				const data = await this.client.send(command);
-			} catch (error) {
+			/*} catch (error) {
 			  	console.log(error);
-			}
+			}*/
 		}
 
 		async _mockDelete(fileName) {
