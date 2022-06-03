@@ -46,8 +46,6 @@ module.exports = (awsSdk, shouldMock, region, bucket, accessKey, secretKey) => {
 		}
 
 		async post(fileName, file) {
-
-			console.log(this.isMock);
 			if (this.isMock) {
 				return await this._mockPost(fileName, file);
 			}
