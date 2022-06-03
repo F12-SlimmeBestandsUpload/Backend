@@ -41,7 +41,10 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 			return;
 		}
 
+		console.log("An upload occurred!");
+
 		let references = [];
+
 		for (let i in req.files) {
 			console.log(req.files[i])
 			const data = await async_fs.readFile('./uploads/' + req.files[i].filename, null);

@@ -8,6 +8,9 @@ module.exports = (awsSdk, shouldMock, region, bucket, accessKey, secretKey) => {
 
 	class AwsS3 {
 		constructor(awsSdk, shouldMock, region, bucket, accessKey, secretKey) {
+			if (typeof shouldMock == 'string') {
+				shouldMock = (shouldMock === 'true');
+			}
 			this.uuid = require('uuid').v4;
 			this.Buffer = require('node:buffer').Buffer;
 			this.sdk = awsSdk;
@@ -43,6 +46,8 @@ module.exports = (awsSdk, shouldMock, region, bucket, accessKey, secretKey) => {
 		}
 
 		async post(fileName, file) {
+
+			console.log(this.isMock);
 			if (this.isMock) {
 				return await this._mockPost(fileName, file);
 			}
