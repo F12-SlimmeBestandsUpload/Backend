@@ -22,7 +22,24 @@ const upload = multer({ dest: 'uploads/' })
 var router = require('./router.js')
 var server = require('./websocketserver.js')
 
-var aws = awsFactory(awsSdk, process.env.MOCK_AWS, process.env.REGION, process.env.BUCKET, process.env.ACCESS_KEY, process.env.SECRET_KEY)
+var aws = awsFactory(
+	awsSdk,
+	process.env.MOCK_AWS,
+	process.env.REGION,
+	process.env.BUCKET,
+	process.env.ACCESS_KEY,
+	process.env.SECRET_KEY
+)
+
+var ttlAws = awsFactory(
+	awsSdk,
+	process.env.TTL_MOCK_AWS,
+	process.env.TTL_REGION,
+	process.env.TTL_BUCKET,
+	process.env.TTL_ACCESS_KEY,
+	process.env.TTL_SECRET_KEY
+)
+
 var websocket = server(ws, http)
 
-router(app, http, fs, QRCode, websocket, multer, upload, aws)
+router(app, http, fs, QRCode, websocket, multer, upload, aws, ttlAws)
