@@ -128,6 +128,22 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 
 	});
 
+	app.post("/finalize",async (req, res) => {
+		if (typeof req.body === 'undefined') {
+			return;
+		}
+		// Alle bestanden versturen naar aws
+		for (let i in req.body.reference) {
+			var reference = req.body.reference[i];
+			let data = await ttlAws.get(reference);
+			if(data != null){
+				response = await aws.post(reference,data);
+				ttlAws.delete(reference)
+			}
+		}
+		res.end()
+	});
+
 	app.listen(appPort, "0.0.0.0", () => {
 		console.log(`The application is listening on port ${appPort} and the static file server on ${staticPort}!
 			Go to localhost:${appPort}/`);
