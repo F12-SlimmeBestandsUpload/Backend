@@ -1,0 +1,91 @@
+<script>
+
+ async function main() {
+
+ 	// create key
+ 	let key = await window.crypto.subtle.generateKey({
+      name: "AES-GCM",
+      length: 256
+    }, true, ["encrypt", "decrypt"]);
+
+ 	// create iv
+ 	let iv = window.crypto.getRandomValues(new Uint8Array(12));
+ 	console.log(iv);
+
+ 	// value to encrypt
+ 	const value = "Hello!";
+
+ 	// encode value to bytes
+ 	let enc = new TextEncoder(); // always utf-8
+ 	let dec = new TextDecoder();
+
+ 	let valueArrayBuffer = enc.encode(value).buffer;
+	console.log(valueArrayBuffer);
+
+	// encrypt value
+	let encryptesArrayBuffer = await window.crypto.subtle.encrypt({
+      name: "AES-GCM",
+      iv: iv
+    }, key, valueArrayBuffer);
+
+    console.log(encryptesArrayBuffer);
+
+    //key to string
+    let jwkKey = await window.crypto.subtle.exportKey("jwk", key)
+    console.log(jwkKey);
+
+    // iv to array
+    let arrayIv = Array.from(iv)
+    console.log(arrayIv);
+
+    // array to json array
+    let jsonArray = JSON.stringify(arrayIv);
+    console.log(jsonArray);
+
+    // creating new jwk object with jwk string from before. (jwkKey.k)
+    let newJwk = {
+    	alg: "A256GCM",
+    	ext: true,
+    	k: jwkKey.k,
+    	key_ops: [
+    		"encrypt",
+    		"decrypt",
+    	],
+    	kty: "oct"
+    }
+
+    // making the new key
+    let key2 = await window.crypto.subtle.importKey(
+    	"jwk", 
+    	newJwk,
+    	{
+    		name: "AES-GCM",
+    	},
+    	true,
+    	[
+    		"encrypt",
+    		"decrypt"
+    	]
+    );
+
+    // making array from jsonarray
+    let newArray = JSON.parse(jsonArray);
+    console.log(newArray);
+
+    // making Uin8Array from array.
+    let iv2 = Uint8Array.from(newArray)
+    console.log(iv2)
+
+    // decrypted value
+    let decryptedValueArrayBuffer = await window.crypto.subtle.decrypt({
+      name: "AES-GCM",
+  	  iv: iv2,
+    }, key2, encryptesArrayBuffer);
+
+    // decoded value
+	console.log(dec.decode(decryptedValueArrayBuffer));
+ }
+ main();
+
+
+</script>
