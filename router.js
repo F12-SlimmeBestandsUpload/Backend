@@ -38,7 +38,7 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 
 	// Post request
 	app.post("/upload", upload.array('photos', 20), async (req, res) => {
-		if (typeof req.body.id === 'undefined' || typeof req.body.key === 'undefined') {
+		if (typeof req.body.id === 'undefined' || typeof req.body.key === 'undefined' || typeof req.body.iv === 'undefined' ) {
 			return;
 		}
 
@@ -66,6 +66,7 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 			}
 			ws.send(JSON.stringify({
 				key: req.body.key,
+				iv: req.body.iv,
 				references: references,
 			}));
 		});
