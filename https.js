@@ -1,11 +1,11 @@
 const https = require('https');
-const fs = require('fs');
+// const fs = require('fs');
 
 const options = {
-    hostname: 'https://localhost:4200',
+    hostname: 'http://localhost:4200',
     port: 4200,
     path: '/',
-    method: 'GET';
+    method: 'GET'
 };
 
 https.createServer(options, (req, res) => {
