@@ -1,3 +1,5 @@
+import './statusResponseService';
+
 const {v4} = require("uuid");
 module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, aws, ttlAws) => {
 	const appPort = 8000;
@@ -5,9 +7,9 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 	const Buffer = require("node:buffer").Buffer;
 	const async_fs = require("node:fs/promises");
 
+	// Dit pakt jouw lokale IP adress zodat jou telefoon naar jou server kan gaan.
+	// Voorbeeld lokaal IP: 192.168.1.29
 	function getLocalIp() {
-		// Dit pakt jouw lokale IP adress zodat jou telefoon naar jou server kan gaan.
-		// Voorbeeld lokaal IP: 192.168.1.29
 		var os = require( 'os' );
 		var networkInterfaces = os.networkInterfaces();
 		let address = null;
@@ -23,6 +25,18 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 		return address;
 	}
 
+	function InternalServerError() {
+		app.use((err, req, res, next) => {
+			res.locals.error = err;
+			if (err.status >= 100 && err.status < 600)
+				res.status(err.status);
+			else
+				res.status(500);
+			res.render('500 - Internal Server Error');
+		});
+	}
+
+	//TODO: Remove this redundant endpoint
 	app.get('/', (req, res) => {
 		console.log("Here!");
 		fs.readFile("index.html", function (err,data) {
@@ -38,9 +52,18 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 
 	// Post request
 	app.post("/upload", upload.array('photos', 20), async (req, res) => {
-		if (typeof req.body.id === 'undefined' || typeof req.body.key === 'undefined' || typeof req.body.iv === 'undefined' ) {
-			return;
+		switch (typeof req.body.id === 'undefined' || typeof req.body.key === 'undefined' || typeof req.body.iv === 'undefined') {
+			case typeof req.body.id === 'undefined': postMessage("ID is missing")
+				break;
+			case typeof req.body.key === 'undefined': postMessage("Key is missing")
+				break;
+			case typeof req.body.iv === 'undefined': postMessage("IV is missing")
+				break;
 		}
+		// if (typeof req.body.id === 'undefined' || typeof req.body.key === 'undefined' || typeof req.body.iv === 'undefined' ) {
+		// 	InternalServerError();
+		// 	return;
+		// }
 
 		console.log("An upload occurred!");
 
@@ -70,7 +93,7 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 				references: references,
 			}));
 		});
-		res.end(JSON.stringify({"success": true, "msg": "done"}));
+		res.end(JSON.stringify({"Success": true, "msg": "done"}));
 	});
 
 	app.get("/reference", async (req, res) => {
@@ -91,6 +114,8 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 		res.end(data);
 	})
 
+
+	//TODO: Remove redundant code
 	app.get('/mobile', (req, res) => {
 		fs.readFile("mobiele_weergave.html", function (err,data) {
 			if (err) {
@@ -103,6 +128,7 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 		});
 	});
 
+	//TODO: Remove redundant code
 	app.post('/mobile', upload.single('pic'), (req, res) => {
 		fs.readFile('./uploads/' + req.file.filename, null, (err, data) => {
 			if (err) {
@@ -129,7 +155,7 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 
 	});
 
-	app.post("/finalize",async (req, res) => {
+	app.post("/finalize", async (req, res) => {
 		if (typeof req.body === 'undefined') {
 			return;
 		}
@@ -165,7 +191,7 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 	websocket.on('connection', function connection(ws, req) {
 		let id = v4();
 		ws.id = id;
-		QRCode.toDataURL("http://" + getLocalIp() + ":" + "4200" + "?id="+id, function (err, url) {
+		QRCode.toDataURL("http://" + getLocalIp() + ":" + "4200" + "?id=" + id, function (err, url) {
 			if (err)
 				console.log('error: ' + err)
 
