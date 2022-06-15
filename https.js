@@ -1,11 +1,17 @@
 const https = require('https');
-// const fs = require('fs');
+const fs = require('fs');
+const key = './cert/key.pem';
+const cert = './cert/cert.pem';
+const privkey = './cert/privkey.pem';
 
 const options = {
+    passphrase: "1234",
     hostname: 'http://localhost:4200',
     port: 4200,
     path: '/',
-    method: 'GET'
+    method: 'GET',
+    key: fs.readFileSync(key, 'utf8'),
+    cert: fs.readFileSync(cert, 'utf8')
 };
 
 https.createServer(options, (req, res) => {
