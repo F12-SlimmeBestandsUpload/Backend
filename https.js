@@ -4,6 +4,9 @@ const key = './cert/key.pem';
 const cert = './cert/cert.pem';
 const privkey = './cert/privkey.pem';
 
+//TODO: Remove this disgusting hack.
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 const options = {
     passphrase: "1234",
     hostname: 'http://localhost:4200',
