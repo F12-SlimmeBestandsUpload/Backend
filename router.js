@@ -171,6 +171,24 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 		res.end()
 	});
 
+	app.delete('/ttl-delete', (req, res) => {
+		if (typeof req.query.ref === 'undefined') {
+			return;
+		}
+		let ref = req.query.ref;
+		let data = await ttlAws.delete(ref);
+		res.end(data);
+	})
+
+	app.delete('/delete', (req, res) => {
+		if (typeof req.query.ref === 'undefined') {
+			return;
+		}
+		let ref = req.query.ref;
+		let data = await aws.delete(ref);
+		res.end(data);
+	})
+
 	app.listen(appPort, "0.0.0.0", () => {
 		console.log(`The application is listening on port ${appPort} and the static file server on ${staticPort}!
 			Go to localhost:${appPort}/`);
