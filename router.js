@@ -1,5 +1,5 @@
 const {v4} = require("uuid");
-module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, aws) => {
+module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, aws, ttlAws) => {
 	const appPort = 8000;
 	const staticPort = 9999;
 	const Buffer = require("node:buffer").Buffer;
@@ -36,8 +36,9 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 		});
 	});
 
+	// Post request
 	app.post("/upload", upload.array('photos', 20), async (req, res) => {
-		if (typeof req.body.id === 'undefined' || typeof req.body.key === 'undefined') {
+		if (typeof req.body.id === 'undefined' || typeof req.body.key === 'undefined' || typeof req.body.iv === 'undefined' ) {
 			return;
 		}
 
@@ -45,14 +46,18 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 
 		let references = [];
 
+		// Alle bestanden versturen naar aws
 		for (let i in req.files) {
 			console.log(req.files[i])
 			const data = await async_fs.readFile('./uploads/' + req.files[i].filename, null);
 			let buffer = Buffer.from(data);
-			let reference = await aws.uniquePost(buffer);
+			let reference = await ttlAws.uniquePost(buffer);
 			references.push(reference);
 		}
 
+		console.log(references);
+
+		// Referenties en encryptie sleuter terug sturen naar portaal
 		websocket.clients.forEach(function each(ws) {
 			if (ws.isAlive === false)
 				return ws.terminate();
@@ -61,6 +66,7 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 			}
 			ws.send(JSON.stringify({
 				key: req.body.key,
+				iv: req.body.iv,
 				references: references,
 			}));
 		});
@@ -73,6 +79,15 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 		}
 		let ref = req.query.ref;
 		let data = await aws.get(ref);
+		res.end(data);
+	})
+
+	app.get("/ttl-reference", async (req, res) => {
+		if (typeof req.query.ref === 'undefined') {
+			return;
+		}
+		let ref = req.query.ref;
+		let data = await ttlAws.get(ref);
 		res.end(data);
 	})
 
@@ -113,6 +128,40 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 		})
 
 	});
+
+	app.post("/finalize",async (req, res) => {
+		if (typeof req.body === 'undefined') {
+			return;
+		}
+		// Alle bestanden versturen naar aws
+		for (let i in req.body.reference) {
+			var reference = req.body.reference[i];
+			let data = await ttlAws.get(reference);
+			if(data != null){
+				response = await aws.post(reference,data);
+				ttlAws.delete(reference)
+			}
+		}
+		res.end()
+	});
+
+	app.delete('/ttl-delete', (req, res) => {
+		if (typeof req.query.ref === 'undefined') {
+			return;
+		}
+		let ref = req.query.ref;
+		let data = await ttlAws.delete(ref);
+		res.end(data);
+	})
+
+	app.delete('/delete', (req, res) => {
+		if (typeof req.query.ref === 'undefined') {
+			return;
+		}
+		let ref = req.query.ref;
+		let data = await aws.delete(ref);
+		res.end(data);
+	})
 
 	app.listen(appPort, "0.0.0.0", () => {
 		console.log(`The application is listening on port ${appPort} and the static file server on ${staticPort}!
