@@ -1,6 +1,6 @@
-import './statusResponseService';
-
+const statusResponseService = require("./StatusResponseService");
 const {v4} = require("uuid");
+
 module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, aws, ttlAws) => {
 	const appPort = 8000;
 	const staticPort = 9999;
@@ -93,7 +93,8 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 				references: references,
 			}));
 		});
-		res.end(JSON.stringify({"Success": true, "msg": "done"}));
+		res.end(statusResponseService.succesReponse(true, "done"));
+		// res.end(JSON.stringify({"Success": true, "msg": "done"}));
 	});
 
 	app.get("/reference", async (req, res) => {
@@ -171,7 +172,7 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 		res.end()
 	});
 
-	app.delete('/ttl-delete', (req, res) => {
+	app.delete('/ttl-delete', async (req, res) => {
 		if (typeof req.query.ref === 'undefined') {
 			return;
 		}
@@ -180,7 +181,7 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 		res.end(data);
 	})
 
-	app.delete('/delete', (req, res) => {
+	app.delete('/delete', async (req, res) => {
 		if (typeof req.query.ref === 'undefined') {
 			return;
 		}
