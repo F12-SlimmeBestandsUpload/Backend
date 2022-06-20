@@ -40,6 +40,23 @@ var ttlAws = awsFactory(
 	process.env.TTL_SECRET_KEY
 )
 
-var websocket = server(ws, http)
+var websocket = server(
+	ws,
+	http,
+	process.env.FRONT_END_HOST,
+	process.env.FRONT_END_PORT,
+	parseInt(process.env.WEBSOCKET_PORT),
+)
 
-router(app, http, fs, QRCode, websocket, multer, upload, aws, ttlAws)
+router(
+	parseInt(process.env.BACK_END_PORT),
+	process.env.FRONT_END_HOST,
+	app,
+	fs,
+	QRCode,
+	websocket,
+	multer,
+	upload,
+	aws,
+	ttlAws
+)
