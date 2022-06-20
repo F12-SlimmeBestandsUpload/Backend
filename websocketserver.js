@@ -1,5 +1,5 @@
 module.exports = (ws, http, frontHost, frontPort, wsPort) => {
-
+	const {v4} = require("uuid");
 	const server = http.createServer();
 	const websocket = new ws.WebSocketServer({ server });
 
