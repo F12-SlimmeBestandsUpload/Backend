@@ -8,7 +8,19 @@ module.exports = (ws, http, frontHost, frontPort, wsPort) => {
 	class WebSocket {
 		constructor(websocket, frontHost, frontPort) {
 			this.websocket = websocket;
-			// hier
+			this.websocket.on('connection', function connection(ws, req) {
+				let id = v4();
+				ws.id = id;
+				QRCode.toDataURL("http://" + frontHost + ":" + frontPort + "/camera?id="+id, function (err, url) {
+					if (err)
+						console.log('error: ' + err)
+
+					ws.send(url)
+				})
+				this.websocket.clients.forEach(function each(client) {
+					console.log('Client.ID: ' + client.id);
+				});
+			});
 		}
 
 		send(key, iv, references) {
