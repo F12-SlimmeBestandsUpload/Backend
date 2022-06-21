@@ -23,11 +23,11 @@ module.exports = (ws, http, frontHost, frontPort, wsPort) => {
 			});
 		}
 
-		send(key, iv, references) {
-			websocket.clients.forEach(function each(ws) {
+		send(id, key, iv, references) {
+			this.websocket.clients.forEach(function each(ws) {
 				if (ws.isAlive === false)
 					return ws.terminate();
-				if (ws.id !== key) {
+				if (ws.id !== id) {
 					return;
 				}
 				ws.send(JSON.stringify({
