@@ -52,18 +52,10 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 
 	// Post request
 	app.post("/upload", upload.array('photos', 20), async (req, res) => {
-		switch (typeof req.body.id === 'undefined' || typeof req.body.key === 'undefined' || typeof req.body.iv === 'undefined') {
-			case typeof req.body.id === 'undefined': postMessage("ID is missing")
-				break;
-			case typeof req.body.key === 'undefined': postMessage("Key is missing")
-				break;
-			case typeof req.body.iv === 'undefined': postMessage("IV is missing")
-				break;
+		if (typeof req.body.id === 'undefined' || typeof req.body.key === 'undefined' || typeof req.body.iv === 'undefined' ) {
+			statusResponseService.internalServerErrorResponse();
+			return;
 		}
-		// if (typeof req.body.id === 'undefined' || typeof req.body.key === 'undefined' || typeof req.body.iv === 'undefined' ) {
-		// 	InternalServerError();
-		// 	return;
-		// }
 
 		console.log("An upload occurred!");
 
@@ -93,7 +85,7 @@ module.exports = (app, staticFileServer, fs, QRCode, websocket, multer, upload, 
 				references: references,
 			}));
 		});
-		res.end(statusResponseService.succesReponse(true, "done"));
+		res.end(statusResponseService.succesResponse("done"));
 		// res.end(JSON.stringify({"Success": true, "msg": "done"}));
 	});
 
