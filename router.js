@@ -2,11 +2,6 @@ module.exports = (app, fs, QRCode, websocket, multer, upload, aws, ttlAws) => {
 	const Buffer = require("node:buffer").Buffer;
 	const async_fs = require("node:fs/promises");
 
-	// todo: remove
-	app.get("/online", (req, res) => {
-		res.end(JSON.stringify({"success": true, "msg": "We are online!"}));
-	});
-
 	// Post request
 	app.post("/upload", upload.array('photos', 20), async (req, res) => {
 		if (typeof req.body.id === 'undefined' || typeof req.body.key === 'undefined' || typeof req.body.iv === 'undefined' ) {
