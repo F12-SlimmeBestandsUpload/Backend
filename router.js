@@ -27,7 +27,7 @@ module.exports = (port, host, app, fs, QRCode, websocket, multer, upload, aws, t
 		console.log(references);
 
 		// Referenties en encryptie sleuter terug sturen naar portaal
-		websocket.send(req.body.key, req.body.iv, references, req.body.id);
+		websocket.send(req.body.id, req.body.key, req.body.iv, references);
 
 		res.end(JSON.stringify({"success": true, "msg": "done"}));
 	});

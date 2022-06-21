@@ -1,4 +1,4 @@
-module.exports = (ws, http, frontHost, frontPort, wsPort, QRCode) => {
+module.exports = (ws, http, frontHost, frontPort, wsPort) => {
 	const {v4} = require("uuid");
 	const server = http.createServer();
 	const websocket = new ws.WebSocketServer({ server });
@@ -17,14 +17,14 @@ module.exports = (ws, http, frontHost, frontPort, wsPort, QRCode) => {
 
 					ws.send(url)
 				})
-				websocket.clients.forEach(function each(client) {
+				this.websocket.clients.forEach(function each(client) {
 					console.log('Client.ID: ' + client.id);
 				});
 			});
 		}
 
-		send(key, iv, references, id) {
-			websocket.clients.forEach(function each(ws) {
+		send(id, key, iv, references) {
+			this.websocket.clients.forEach(function each(ws) {
 				if (ws.isAlive === false)
 					return ws.terminate();
 				if (ws.id !== id) {
