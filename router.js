@@ -1,7 +1,4 @@
-const {v4} = require("uuid");
-module.exports = (port, host, app, fs, QRCode, websocket, multer, upload, aws, ttlAws) => {
-	const appPort = port;
-	const qrHost = host;
+module.exports = (app, fs, QRCode, websocket, multer, upload, aws, ttlAws) => {
 	const Buffer = require("node:buffer").Buffer;
 	const async_fs = require("node:fs/promises");
 
@@ -84,8 +81,5 @@ module.exports = (port, host, app, fs, QRCode, websocket, multer, upload, aws, t
 		res.end(data);
 	})
 
-	app.listen(appPort, "0.0.0.0", () => {
-		console.log(`The application is listening on port ${appPort}!
-			Go to localhost:${appPort}/`);
-	});
+	return app;
 }
