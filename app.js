@@ -46,6 +46,7 @@ var websocket = server(
 	process.env.FRONT_END_HOST,
 	process.env.FRONT_END_PORT,
 	parseInt(process.env.WEBSOCKET_PORT),
+	QRCode
 )
 
 router(
