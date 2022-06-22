@@ -6,6 +6,7 @@ const awsSdk = require('@aws-sdk/client-s3');
 const awsFactory = require('./aws.js')
 require('dotenv').config();
 
+let appPort = parseInt(process.env.BACK_END_PORT);
 app.use(express.json());
 app.use(cors())
 
@@ -40,6 +41,28 @@ var ttlAws = awsFactory(
 	process.env.TTL_SECRET_KEY
 )
 
-var websocket = server(ws, http)
+var websocket = server(
+	ws,
+	process.env.FRONT_END_HOST,
+	process.env.FRONT_END_PORT,
+	parseInt(process.env.WEBSOCKET_PORT),
+	QRCode
+)
 
-router(app, http, fs, QRCode, websocket, multer, upload, aws, ttlAws)
+const appWithFunctionality = router(
+	app,
+	fs,
+	QRCode,
+	websocket,
+	multer,
+	upload,
+	aws,
+	ttlAws
+)
+
+var httpsServer = require('./https.js')(appWithFunctionality, appPort)
+
+httpsServer.listen(appPort, "0.0.0.0", () => {
+	console.log(`The application is listening on port ${appPort}!
+		Go to localhost:${appPort}/`);
+});
