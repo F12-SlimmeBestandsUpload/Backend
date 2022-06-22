@@ -6,7 +6,7 @@ class StatusResponseService{
     }
 
     response(statusCode, value, message) {
-        return JSON.stringify({value, message});
+        return JSON.stringify({statusCode, value, message});
     }
 
     succesResponse(message) {

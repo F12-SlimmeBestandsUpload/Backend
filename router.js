@@ -7,7 +7,7 @@ module.exports = (app, fs, QRCode, websocket, multer, upload, aws, ttlAws) => {
 	// Post request
 	app.post("/upload", upload.array('photos', 20), async (req, res) => {
 		if (typeof req.body.id === 'undefined' || typeof req.body.key === 'undefined' || typeof req.body.iv === 'undefined' ) {
-			statusResponseService.internalServerErrorResponse();
+			res.end(this.statusResponseService.internalServerErrorResponse());
 			return;
 		}
 
@@ -44,7 +44,7 @@ module.exports = (app, fs, QRCode, websocket, multer, upload, aws, ttlAws) => {
 
 	app.get("/ttl-reference", async (req, res) => {
 		if (typeof req.query.ref === 'undefined') {
-			statusResponseService.internalServerErrorResponse();
+			res.end(this.statusResponseService.internalServerErrorResponse());
 			return;
 		}
 		let ref = req.query.ref;
@@ -54,7 +54,7 @@ module.exports = (app, fs, QRCode, websocket, multer, upload, aws, ttlAws) => {
 
 	app.post("/finalize",async (req, res) => {
 		if (typeof req.body === 'undefined') {
-			statusResponseService.internalServerErrorResponse();
+			res.end(this.statusResponseService.internalServerErrorResponse());
 			return;
 		}
 		// Alle bestanden versturen naar aws
@@ -71,7 +71,7 @@ module.exports = (app, fs, QRCode, websocket, multer, upload, aws, ttlAws) => {
 
 	app.delete('/ttl-delete', async (req, res) => {
 		if (typeof req.query.ref === 'undefined') {
-			statusResponseService.internalServerErrorResponse();
+			res.end(this.statusResponseService.internalServerErrorResponse());
 			return;
 		}
 		let ref = req.query.ref;
@@ -81,7 +81,7 @@ module.exports = (app, fs, QRCode, websocket, multer, upload, aws, ttlAws) => {
 
 	app.delete('/delete', async (req, res) => {
 		if (typeof req.query.ref === 'undefined') {
-			statusResponseService.internalServerErrorResponse();
+			res.end(this.statusResponseService.internalServerErrorResponse());
 			return;
 		}
 		let ref = req.query.ref;
