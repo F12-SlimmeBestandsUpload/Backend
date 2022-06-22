@@ -5,11 +5,11 @@ class StatusResponseService{
     constructor() {
     }
 
-    response(statusCode: int, value: boolean, message: string) {
+    response(statusCode, value, message) {
         return JSON.stringify({value, message});
     }
 
-    succesResponse(message: string) {
+    succesResponse(message) {
         this.response(200, true, message);
     }
 
