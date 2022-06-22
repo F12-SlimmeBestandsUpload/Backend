@@ -31,11 +31,12 @@ module.exports = (port, host, app, fs, QRCode, websocket, multer, upload, aws, t
 		// Referenties en encryptie sleuter terug sturen naar portaal
 		websocket.send(req.body.key, req.body.iv, references);
 
-		res.end(JSON.stringify({"success": true, "msg": "done"}));
+		res.end(this.statusResponseService.succesResponse("done"));
 	});
 
 	app.get("/reference", async (req, res) => {
 		if (typeof req.query.ref === 'undefined') {
+			statusResponseService.internalServerErrorResponse();
 			return;
 		}
 		let ref = req.query.ref;
@@ -45,6 +46,7 @@ module.exports = (port, host, app, fs, QRCode, websocket, multer, upload, aws, t
 
 	app.get("/ttl-reference", async (req, res) => {
 		if (typeof req.query.ref === 'undefined') {
+			statusResponseService.internalServerErrorResponse();
 			return;
 		}
 		let ref = req.query.ref;
@@ -54,6 +56,7 @@ module.exports = (port, host, app, fs, QRCode, websocket, multer, upload, aws, t
 
 	app.post("/finalize",async (req, res) => {
 		if (typeof req.body === 'undefined') {
+			statusResponseService.internalServerErrorResponse();
 			return;
 		}
 		// Alle bestanden versturen naar aws
@@ -70,6 +73,7 @@ module.exports = (port, host, app, fs, QRCode, websocket, multer, upload, aws, t
 
 	app.delete('/ttl-delete', async (req, res) => {
 		if (typeof req.query.ref === 'undefined') {
+			statusResponseService.internalServerErrorResponse();
 			return;
 		}
 		let ref = req.query.ref;
@@ -79,6 +83,7 @@ module.exports = (port, host, app, fs, QRCode, websocket, multer, upload, aws, t
 
 	app.delete('/delete', async (req, res) => {
 		if (typeof req.query.ref === 'undefined') {
+			statusResponseService.internalServerErrorResponse();
 			return;
 		}
 		let ref = req.query.ref;
