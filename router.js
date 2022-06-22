@@ -1,4 +1,4 @@
-const statusResponseService = require("./StatusResponseService");
+const statusResponseService = require("./StatusResponseService")();
 
 module.exports = (app, fs, QRCode, websocket, multer, upload, aws, ttlAws) => {
 	const Buffer = require("node:buffer").Buffer;
